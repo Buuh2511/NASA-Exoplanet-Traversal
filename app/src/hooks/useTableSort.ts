@@ -1,18 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { ColumnKey, Exoplanet, SortState } from "@/types/exoplanet";
 
 export function useTableSort(data: Exoplanet[]) {
   const [sort, setSort] = useState<SortState>({ key: null, dir: null });
 
-  function toggle(key: ColumnKey) {
+  const toggle = useCallback((key: ColumnKey) => {
     setSort((prev) => {
       if (prev.key !== key) return { key, dir: "asc" };
       if (prev.dir === "asc") return { key, dir: "desc" };
       return { key: null, dir: null };
     });
-  }
+  }, []);
 
   const sorted = useMemo(() => {
     if (!sort.key || !sort.dir) return data;
