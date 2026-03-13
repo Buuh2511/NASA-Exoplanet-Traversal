@@ -3,8 +3,6 @@ import type { DataIndex, Exoplanet, QueryParams } from "@/types/exoplanet";
 export function buildIndex(records: Exoplanet[]): DataIndex {
   const byYear = new Map<number, number[]>();
   const byFacility = new Map<string, number[]>();
-  const yearSet = new Set<number>();
-  const facilitySet = new Set<string>();
 
   for (let i = 0; i < records.length; i++) {
     const r = records[i];
@@ -12,13 +10,11 @@ export function buildIndex(records: Exoplanet[]): DataIndex {
     if (r.disc_year !== null) {
       if (!byYear.has(r.disc_year)) byYear.set(r.disc_year, []);
       byYear.get(r.disc_year)!.push(i);
-      yearSet.add(r.disc_year);
     }
 
     if (r.disc_facility) {
       if (!byFacility.has(r.disc_facility)) byFacility.set(r.disc_facility, []);
       byFacility.get(r.disc_facility)!.push(i);
-      facilitySet.add(r.disc_facility);
     }
   }
 
@@ -26,8 +22,8 @@ export function buildIndex(records: Exoplanet[]): DataIndex {
     records,
     byYear,
     byFacility,
-    years: [...yearSet].sort((a, b) => a - b),
-    facilities: [...facilitySet].sort(),
+    years: [...byYear.keys()].sort((a, b) => a - b),
+    facilities: [...byFacility.keys()].sort(),
   };
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { buildIndex, queryIndex } from "@/lib/dataIndex";
 import type { DataIndex, Exoplanet, QueryParams } from "@/types/exoplanet";
 
@@ -14,7 +14,9 @@ export function useExoplanetData() {
   const [facilities, setFacilities] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch("/api/exoplanets")
+    const controller = new AbortController();
+
+    fetch("/api/exoplanets", { signal: controller.signal })
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json() as Promise<Exoplanet[]>;
@@ -27,15 +29,18 @@ export function useExoplanetData() {
         setStatus("ready");
       })
       .catch((e: unknown) => {
+        if (e instanceof Error && e.name === "AbortError") return;
         setError(e instanceof Error ? e.message : "Unknown error");
         setStatus("error");
       });
+
+    return () => controller.abort();
   }, []);
 
-  function search(params: QueryParams): Exoplanet[] {
+  const search = useCallback((params: QueryParams): Exoplanet[] => {
     if (!indexRef.current) return [];
     return queryIndex(indexRef.current, params);
-  }
+  }, []);
 
   return { status, error, years, facilities, search };
 }
