@@ -40,22 +40,38 @@ export default function TableToolbar({
         )}
       </div>
 
-      <div className="relative flex items-center gap-1">
+      <div className="relative flex flex-wrap items-center gap-1.5">
         {removable.map((col) => (
           <button
             key={col.key}
-            className="btn-icon"
-            title={`Remove "${col.label}" column`}
             onClick={() => onRemove(col.key)}
+            title={`Remove "${col.label}" column`}
+            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors hover:text-red-500"
+            style={{
+              background: "var(--color-primary-50)",
+              border: "1px solid var(--color-primary-200)",
+              color: "var(--color-primary-700)",
+            }}
           >
-            <Minus size={14} />
+            {col.label}
+            <Minus size={11} />
           </button>
         ))}
 
         {available.length > 0 && (
           <div className="relative">
-            <button className="btn-icon" title="Add column" onClick={onToggleAddMenu}>
-              <Plus size={14} />
+            <button
+              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors"
+              title="Add column"
+              onClick={onToggleAddMenu}
+              style={{
+                background: "var(--color-surface-50)",
+                border: "1px solid var(--color-surface-200)",
+                color: "var(--color-surface-600)",
+              }}
+            >
+              <Plus size={11} />
+              Add column
             </button>
             {addMenuOpen && (
               <div
